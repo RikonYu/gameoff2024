@@ -8,4 +8,6 @@ public class Consts
     public static float PlayerCrouchSpeedFactor = 0.5f;
     public static float ConeAngle = 5f;
     public static float ConeDistance = 10f;
+
+    public static float CatchDistance = 1.0f;
 }
