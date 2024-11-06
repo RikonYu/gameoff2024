@@ -1,32 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections.Generic;
-using System.IO;
 using UnityEngine.AI;
 
 public class NPCController : MonoBehaviour
 {
     public int characterID;
-    public List<Vector2> waypoints = new List<Vector2>(); 
-    public float speed = 2f;
+    public List<Vector2> waypoints = new List<Vector2>();
 
     private int currentWaypointIndex = 0;
-    NavMeshAgent agent;
-    bool isWalkingForward = true;
 
-    void Awake()
-    {
-        AssignCharacterID();
-    }
+    private NavMeshAgent agent;
 
     void Start()
     {
-        LoadWaypoints();
-        agent = this.gameObject.GetComponent<NavMeshAgent>();
+        agent = this.GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
-        agent.SetDestination(transform.position);
-        Debug.Log($"waypoint count: {waypoints.Count}");
-
     }
 
     void Update()
@@ -34,27 +23,6 @@ public class NPCController : MonoBehaviour
         MoveAlongWaypoints();
     }
 
-    void AssignCharacterID()
-    {
-        NPCController[] existingNPCs = FindObjectsOfType<NPCController>();
-        characterID = existingNPCs.Length;
-    }
-
-    void LoadWaypoints()
-    {
-        int levelID = LevelManager.GetLevelID();
-        string path = $"Data/Waypoints/{levelID}_{characterID}";
-        TextAsset textAsset = Resources.Load<TextAsset>(path);
-        if (textAsset != null)
-        {
-            List<Vector2> data = JsonUtility.FromJson<List<Vector2>>(textAsset.text);
-            waypoints = data;
-        }
-        else
-        {
-            waypoints = new List<Vector2>();
-        }
-    }
 
     void MoveAlongWaypoints()
     {
@@ -63,29 +31,44 @@ public class NPCController : MonoBehaviour
 
         Vector2 targetPosition = waypoints[currentWaypointIndex];
         Vector2 currentPosition = transform.position;
-        float step = speed * Time.deltaTime;
-        //transform.position = Vector2.MoveTowards(currentPosition, targetPosition, step);
-
         agent.SetDestination(targetPosition);
-
 
         if (Vector2.Distance(currentPosition, targetPosition) < 0.01f)
         {
-            if (isWalkingForward)
-                currentWaypointIndex++;
-            else
-                currentWaypointIndex--;
+            currentWaypointIndex++;
             if (currentWaypointIndex >= waypoints.Count)
             {
-                currentWaypointIndex = waypoints.Count - 1;
-                isWalkingForward = false;
+                currentWaypointIndex = 0; // 根据需要，可以改为停止移动
             }
-            if (currentWaypointIndex<0)
+        }
+    }
+
+    public NPCData GetData()
+    {
+        NPCData data = new NPCData();
+        data.characterID = characterID;
+        data.waypoints = new List<Vector2>(waypoints);
+        return data;
+    }
+
+    public static void CreateFromData(NPCData data)
+    {
+        GameObject prefab = Resources.Load<GameObject>("Prefabs/NPCCharacter");
+        if (prefab != null)
+        {
+            GameObject obj = GameObject.Instantiate(prefab);
+            NPCController npc = obj.GetComponent<NPCController>();
+            npc.characterID = data.characterID;
+            npc.waypoints = new List<Vector2>(data.waypoints);
+
+            if (npc.waypoints.Count > 0)
             {
-                currentWaypointIndex = 0;
-                isWalkingForward = true;
+                obj.transform.position = npc.waypoints[0];
             }
-                
+        }
+        else
+        {
+            Debug.LogError("NPC prefab not found in Resources/Prefabs.");
         }
     }
 }

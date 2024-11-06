@@ -1,0 +1,111 @@
+{
+    "obstacles": [
+        {
+            "position": {
+                "x": -7.050000190734863,
+                "y": -8.5600004196167,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 3.0,
+                "y": 3.0,
+                "z": 1.0
+            },
+            "spriteName": "building1-1",
+            "isWalkable": true,
+            "colliderType": "BoxCollider2D",
+            "colliderParameters": {
+                "offset": {
+                    "x": 0.0,
+                    "y": -0.17256104946136475
+                },
+                "size": {
+                    "x": 2.0,
+                    "y": 2.642235040664673
+                },
+                "radius": 0.0,
+                "points": [],
+                "edgePoints": []
+            }
+        },
+        {
+            "position": {
+                "x": 6.940000057220459,
+                "y": -7.760000228881836,
+                "z": -0.06931598484516144
+            },
+            "scale": {
+                "x": 3.0,
+                "y": 3.0,
+                "z": 1.0
+            },
+            "spriteName": "building1-2",
+            "isWalkable": true,
+            "colliderType": "BoxCollider2D",
+            "colliderParameters": {
+                "offset": {
+                    "x": 0.0,
+                    "y": -0.28594279289245608
+                },
+                "size": {
+                    "x": 2.0,
+                    "y": 3.834260940551758
+                },
+                "radius": 0.0,
+                "points": [],
+                "edgePoints": []
+            }
+        },
+        {
+            "position": {
+                "x": 0.0,
+                "y": 0.0,
+                "z": 0.0
+            },
+            "scale": {
+                "x": 3.0,
+                "y": 3.0,
+                "z": 1.0
+            },
+            "spriteName": "bg1",
+            "isWalkable": true,
+            "colliderType": "BoxCollider2D",
+            "colliderParameters": {
+                "offset": {
+                    "x": 0.0,
+                    "y": 2.053542137145996
+                },
+                "size": {
+                    "x": 8.0,
+                    "y": 4.107084274291992
+                },
+                "radius": 0.0,
+                "points": [],
+                "edgePoints": []
+            }
+        }
+    ],
+    "npcs": [
+        {
+            "characterID": 0,
+            "waypoints": [
+                {
+                    "x": -12.289787292480469,
+                    "y": -5.245551109313965
+                },
+                {
+                    "x": 0.05753612518310547,
+                    "y": -1.1800518035888672
+                },
+                {
+                    "x": 12.373350143432618,
+                    "y": -4.24071741104126
+                }
+            ]
+        }
+    ],
+    "walkableSize": {
+        "x": 25.0,
+        "y": 25.0
+    }
+}

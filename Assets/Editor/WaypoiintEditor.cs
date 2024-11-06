@@ -1,10 +1,9 @@
-﻿using UnityEngine;
+using UnityEngine;
 using UnityEditor;
-using System.Collections.Generic;
-using System.IO;
+using UnityEditor.SceneManagement;
 
 [CustomEditor(typeof(NPCController))]
-public class NPCControllerEditor : Editor
+public class NPCWaypointEditor : Editor
 {
     private NPCController npcController;
     private bool showWaypointsList = false;
@@ -13,65 +12,65 @@ public class NPCControllerEditor : Editor
     private void OnEnable()
     {
         npcController = (NPCController)target;
-        SceneView.duringSceneGui += OnSceneGUI;
-        AssignCharacterIDs();
+
+        if (EditorSceneManager.GetActiveScene().name == "LevelEditor")
+        {
+            SceneView.duringSceneGui += OnSceneGUI;
+        }
     }
 
     private void OnDisable()
     {
-        SceneView.duringSceneGui -= OnSceneGUI;
+        if (EditorSceneManager.GetActiveScene().name == "LevelEditor")
+        {
+            SceneView.duringSceneGui -= OnSceneGUI;
+        }
     }
 
     public override void OnInspectorGUI()
     {
         DrawDefaultInspector();
 
-        GUILayout.Space(10);
-        GUILayout.Label("Waypoints Editor", EditorStyles.boldLabel);
-
-        if (GUILayout.Button("Add Waypoint"))
+        if (EditorSceneManager.GetActiveScene().name == "LevelEditor")
         {
-            AddWaypointAtPosition(npcController.transform.position);
-        }
+            GUILayout.Space(10);
+            GUILayout.Label("Waypoints Editor", EditorStyles.boldLabel);
 
-        if (GUILayout.Button("Clear Waypoint"))
-            npcController.waypoints.Clear();
-
-        GUILayout.Space(10);
-
-        showWaypointsList = EditorGUILayout.Foldout(showWaypointsList, "Show Waypoints List");
-        if (showWaypointsList)
-        {
-            EditorGUI.indentLevel++;
-            if (npcController.waypoints != null)
+            if (GUILayout.Button("Add Waypoint"))
             {
-                for (int i = 0; i < npcController.waypoints.Count; i++)
-                {
-                    GUILayout.BeginHorizontal();
-                    EditorGUILayout.LabelField($"Waypoint {i}", GUILayout.Width(100));
-                    EditorGUILayout.Vector2Field("", npcController.waypoints[i]);
-                    if (GUILayout.Button("Delete"))
-                    {
-                        Undo.RecordObject(npcController, "Delete Waypoint");
-                        npcController.waypoints.RemoveAt(i);
-                        break;
-                    }
-                    GUILayout.EndHorizontal();
-                }
+                AddWaypointAtPosition(npcController.transform.position);
             }
-            EditorGUI.indentLevel--;
+
+            GUILayout.Space(10);
+
+            showWaypointsList = EditorGUILayout.Foldout(showWaypointsList, "Show Waypoints List");
+            if (showWaypointsList)
+            {
+                EditorGUI.indentLevel++;
+                if (npcController.waypoints != null)
+                {
+                    for (int i = 0; i < npcController.waypoints.Count; i++)
+                    {
+                        GUILayout.BeginHorizontal();
+                        EditorGUILayout.LabelField($"Waypoint {i}", GUILayout.Width(100));
+                        EditorGUILayout.Vector2Field("", npcController.waypoints[i]);
+                        if (GUILayout.Button("Delete"))
+                        {
+                            Undo.RecordObject(npcController, "Delete Waypoint");
+                            npcController.waypoints.RemoveAt(i);
+                            break;
+                        }
+                        GUILayout.EndHorizontal();
+                    }
+                }
+                EditorGUI.indentLevel--;
+            }
         }
-
-        GUILayout.Space(10);
-
     }
 
     private void OnSceneGUI(SceneView sceneView)
     {
-        if (Application.isPlaying)
-            return;
-
-        if (npcController.waypoints == null)
+        if (npcController.waypoints == null || !npcController.isActiveAndEnabled)
             return;
 
         Event e = Event.current;
@@ -89,7 +88,7 @@ public class NPCControllerEditor : Editor
         {
             EditorGUI.BeginChangeCheck();
             Vector3 waypointPosition = new Vector3(npcController.waypoints[i].x, npcController.waypoints[i].y, npcController.transform.position.z);
-            float handleSize = HandleUtility.GetHandleSize(waypointPosition) * 0.5f;
+            float handleSize = HandleUtility.GetHandleSize(waypointPosition) * 0.1f;
 
             if (Handles.Button(waypointPosition, Quaternion.identity, handleSize, handleSize, Handles.DotHandleCap))
             {
@@ -111,14 +110,11 @@ public class NPCControllerEditor : Editor
         }
 
         Handles.color = Color.red;
-        if(npcController.waypoints.Count>0)
-            Handles.DrawLine(npcController.transform.position, npcController.waypoints[0], 5f);
-
         for (int i = 0; i < npcController.waypoints.Count - 1; i++)
         {
             Vector3 pointA = new Vector3(npcController.waypoints[i].x, npcController.waypoints[i].y, npcController.transform.position.z);
             Vector3 pointB = new Vector3(npcController.waypoints[i + 1].x, npcController.waypoints[i + 1].y, npcController.transform.position.z);
-            Handles.DrawLine(pointA, pointB, 5f);
+            Handles.DrawLine(pointA, pointB);
         }
 
         if (e.type == EventType.KeyDown && e.keyCode == KeyCode.Delete)
@@ -137,12 +133,5 @@ public class NPCControllerEditor : Editor
     {
         npcController.waypoints.Add(position);
         EditorUtility.SetDirty(npcController);
-    }
-
-    private void AssignCharacterIDs()
-    {
-        NPCController[] allNPCs = FindObjectsOfType<NPCController>();
-        npcController.characterID = allNPCs.Length - 1;
-
     }
 }
