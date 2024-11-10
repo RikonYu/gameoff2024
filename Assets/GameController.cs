@@ -59,8 +59,10 @@ public class GameController : MonoBehaviour
         foreach (var npcData in tilemapData.npcs)
         {
             var npc = Instantiate(npcPrefabs.Find(x => x.name == npcData.spriteName), Environment.transform);
-            npc.transform.position = npcData.position;
-            npc.transform.Find("collidersprite").gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/" + npcData.spriteName);
+            npc.transform.parent.transform.position = npcData.position;
+            npc.transform.localPosition = new Vector2(0, -0.75f);
+            //npc.transform.Find("collidersprite").gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/charcollider");
+
             npc.transform.Find("collidersprite").gameObject.GetComponent<NPCController>().waypoints = npcData.waypoints;
         }
         FillTilesInView();
