@@ -4,7 +4,7 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class TransparentCircleController : MonoBehaviour
 {
-    public float circleRadius = 50f; //
+    public float circleRadius = 75f; //
 
     private Material mat;
     private Canvas canvas;

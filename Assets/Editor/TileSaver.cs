@@ -64,8 +64,8 @@ public class TilemapEditor : EditorWindow
         foreach(var npc in npcs)
         {
             ans.npcs.Add(new NPCData {
-                prefabName=npc.transform.parent.gameObject.name, 
-                spriteName = npc.transform.parent.gameObject.GetComponent<SpriteRenderer>().sprite.name,
+                prefabName=npc.transform.Find("sprite").name, 
+                spriteName = npc.transform.Find("sprite").GetComponent<SpriteRenderer>().sprite.name,
                 position = npc.transform.position, 
                 waypoints = npc.waypoints });
         }

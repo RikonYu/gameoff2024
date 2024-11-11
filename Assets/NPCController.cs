@@ -27,8 +27,8 @@ public class NPCController : MonoBehaviour
     private void FixedUpdate()
     {
         agent.SetDestination(new Vector3(waypoints[currentWaypointInd].x, waypoints[currentWaypointInd].y, this.transform.position.z));
-        Debug.Log($"{this.transform.parent.position}=>{waypoints[currentWaypointInd]}");
-        if(Vector2.Distance(this.transform.parent.position, waypoints[currentWaypointInd])<= 0.01f){
+        //Debug.Log($"{this.transform.position}=>{waypoints[currentWaypointInd]}");
+        if(Vector2.Distance(this.transform.position, waypoints[currentWaypointInd])<= 0.05f){
             if (isForward)
                 currentWaypointInd++;
             else
@@ -44,6 +44,9 @@ public class NPCController : MonoBehaviour
             currentWaypointInd = 0;
             isForward = true;
         }
-        this.transform.parent.position = this.transform.position;
+    }
+    public void Kill()
+    {
+        Destroy(this.gameObject);
     }
 }

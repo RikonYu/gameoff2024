@@ -63,7 +63,7 @@ public class GameController : MonoBehaviour
             npc.transform.localPosition = new Vector2(0, -0.75f);
             //npc.transform.Find("collidersprite").gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/charcollider");
 
-            npc.transform.Find("collidersprite").gameObject.GetComponent<NPCController>().waypoints = npcData.waypoints;
+            npc.GetComponent<NPCController>().waypoints = npcData.waypoints;
         }
         FillTilesInView();
     }
