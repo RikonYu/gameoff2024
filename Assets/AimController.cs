@@ -1,12 +1,14 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.Collections.Generic;
 
 public class AimController : MonoBehaviour
 {
     private RectTransform rectTransform;
     private Canvas canvas;
     public GameObject pauseMenu;
+    public GameObject pauseButton;
 
     void Start()
     {
@@ -29,76 +31,89 @@ public class AimController : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            if (IsPointerOverPauseButton())
-            {
-                TogglePauseMenu();
-            }
+            if (IsPointerOverUIElement() && IsPointerOverSpecificUIElement(pauseButton.gameObject))
+                {
+                    pauseMenu.SetActive(true);
+                }
             else
             {
-                CheckNPCCollision();
+                HandleSceneClick();
             }
         }
 
     }
 
-    private bool IsPointerOverPauseButton()
+    bool IsPointerOverUIElement()
     {
-        // 检测鼠标是否点击在 UI 元素上
-        if (EventSystem.current.IsPointerOverGameObject())
+        return EventSystem.current.IsPointerOverGameObject();
+    }
+
+    bool IsPointerOverSpecificUIElement(GameObject target)
+    {
+        PointerEventData pointerData = new PointerEventData(EventSystem.current)
         {
-            PointerEventData pointerData = new PointerEventData(EventSystem.current)
-            {
-                position = Input.mousePosition
-            };
+            position = Input.mousePosition
+        };
 
-            var results = new System.Collections.Generic.List<RaycastResult>();
-            EventSystem.current.RaycastAll(pointerData, results);
+        List<RaycastResult> results = new List<RaycastResult>();
+        EventSystem.current.RaycastAll(pointerData, results);
 
-            // 遍历射线检测的所有结果
-            foreach (var result in results)
+        foreach (RaycastResult result in results)
+        {
+            if (result.gameObject == target)
             {
-                if (result.gameObject.name  == "PauseButton") // 假设你的暂停按钮打了 PauseButton 标签
-                {
-                    return true;
-                }
+                return true;
             }
         }
-
         return false;
     }
 
-    private void TogglePauseMenu()
-    {
-        if (pauseMenu != null)
-        {
-            bool isActive = pauseMenu.activeSelf;
-            pauseMenu.SetActive(!isActive);
-        }
-    }
 
-    private void CheckNPCCollision()
+    void HandleSceneClick()
     {
-        Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        worldPoint.z = 0f; // Adjust Z to match sprite positions
 
-        // 从鼠标位置发射一条射线，检测是否点击到 NPC
-        RaycastHit2D hit = Physics2D.Raycast(mousePosition, Vector2.zero, Mathf.Infinity, LayerMask.GetMask("NPC"));
+        // Find all SpriteRenderers at the mouse position
+        SpriteRenderer[] allSprites = FindObjectsOfType<SpriteRenderer>();
+        List<SpriteRenderer> spritesUnderMouse = new List<SpriteRenderer>();
+
         Debug.Log("check");
-        if (hit.collider != null)
+
+        foreach (SpriteRenderer sr in allSprites)
         {
-            var npcController = hit.collider.gameObject.GetComponent<NPCController>();
-            if (npcController != null && IsSpriteVisible(hit.collider.gameObject, mousePosition))
+            if (sr.bounds.Contains(worldPoint))
             {
-                npcController.Kill();
+                spritesUnderMouse.Add(sr);
+            }
+        }
+
+        if (spritesUnderMouse.Count > 0)
+        {
+            // Sort sprites from topmost to bottommost
+            spritesUnderMouse.Sort((a, b) =>
+            {
+                int layerOrderA = SortingLayer.GetLayerValueFromID(a.sortingLayerID);
+                int layerOrderB = SortingLayer.GetLayerValueFromID(b.sortingLayerID);
+
+                if (layerOrderA != layerOrderB)
+                    return layerOrderB.CompareTo(layerOrderA);
+
+                if (a.sortingOrder != b.sortingOrder)
+                    return b.sortingOrder.CompareTo(a.sortingOrder);
+
+                // Lower Z means closer to the camera in 2D
+                return b.transform.position.z.CompareTo(a.transform.position.z);
+            });
+
+            SpriteRenderer topSprite = spritesUnderMouse[0];
+            NPCController npc = topSprite.GetComponent<NPCController>();
+
+            if (npc != null)
+            {
+                npc.Kill();
+                Debug.Log("NPC killed");
             }
         }
     }
-
-    private bool IsSpriteVisible(GameObject target, Vector2 mouseWorldPosition)
-    {
-        // 使用射线检测可见性，确保没有其它物体遮挡
-        RaycastHit2D hit = Physics2D.Raycast(mouseWorldPosition, Vector2.zero, Mathf.Infinity);
-
-        return hit.collider != null && hit.collider.gameObject == target;
-    }
-
 }

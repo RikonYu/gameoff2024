@@ -1528,7 +1528,7 @@ GameObject:
   - component: {fileID: 1376646741}
   - component: {fileID: 1376646742}
   m_Layer: 5
-  m_Name: Cross
+  m_Name: Aim
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1569,6 +1569,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   pauseMenu: {fileID: 761180860}
+  pauseButton: {fileID: 2103856273}
 --- !u!1 &1738325213
 GameObject:
   m_ObjectHideFlags: 0

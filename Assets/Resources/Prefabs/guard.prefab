@@ -13,6 +13,7 @@ GameObject:
   - component: {fileID: 2594667086462699785}
   - component: {fileID: 4066350851744708412}
   - component: {fileID: 5145976625699416518}
+  - component: {fileID: 5393589591787525386}
   m_Layer: 6
   m_Name: guard
   m_TagString: Untagged
@@ -137,6 +138,32 @@ NavMeshAgent:
   m_BaseOffset: 0.25
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 4
+--- !u!61 &5393589591787525386
+BoxCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5600394525988551763}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: -0.028147504, y: 0.5915754}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 0.5, y: 0.5}
+    newSize: {x: 1, y: 2}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  serializedVersion: 2
+  m_Size: {x: 0.6785288, y: 1.6831508}
+  m_EdgeRadius: 0
 --- !u!1 &8947639169677248813
 GameObject:
   m_ObjectHideFlags: 0
