@@ -6,12 +6,18 @@ public class Consts
 {
 
 }
+[System.Serializable]
+public class BuildingData
+{
+    public Vector2 position;
+    public string prefabName;
+}
 
 [System.Serializable]
 public class LevelData
 {
     [SerializeField]
-    public List<TileData> buildingTiles;
+    public List<BuildingData> buildings;
 
     [SerializeField]
     public List<TileData> collisionTiles;

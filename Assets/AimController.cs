@@ -2,11 +2,14 @@
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using System.Collections.Generic;
+using UnityEngine.Tilemaps;
+using System;
 
 public class AimController : MonoBehaviour
 {
     private RectTransform rectTransform;
     private Canvas canvas;
+    public Tilemap tilemap;
     public GameObject pauseMenu;
     public GameObject pauseButton;
 
@@ -37,7 +40,7 @@ public class AimController : MonoBehaviour
                 }
             else
             {
-                HandleSceneClick();
+                DetectTilesAtMousePosition();
             }
         }
 
@@ -69,51 +72,31 @@ public class AimController : MonoBehaviour
     }
 
 
-    void HandleSceneClick()
+    void DetectTilesAtMousePosition()
     {
-        Vector3 worldPoint = Camera.main.ScreenToWorldPoint(Input.mousePosition);
-        worldPoint.z = 0f; // Adjust Z to match sprite positions
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        Vector2 mouseWorldPos2D = new Vector2(mouseWorldPos.x, mouseWorldPos.y);
 
-        // Find all SpriteRenderers at the mouse position
-        SpriteRenderer[] allSprites = FindObjectsOfType<SpriteRenderer>();
-        List<SpriteRenderer> spritesUnderMouse = new List<SpriteRenderer>();
+        Collider2D[] colliders = Physics2D.OverlapPointAll(mouseWorldPos2D);
 
-        Debug.Log("check");
+        RaycastHit2D[] results;
 
-        foreach (SpriteRenderer sr in allSprites)
+        var hits = Physics2D.RaycastAll(mouseWorldPos, Vector3.forward, 20f);
+
+        Array.Sort(hits, (a, b) => { return a.collider.gameObject.transform.position.y.CompareTo(b.collider.gameObject.transform.position.y); });
+
+
+
+        foreach (var hit in hits)
         {
-            if (sr.bounds.Contains(worldPoint))
-            {
-                spritesUnderMouse.Add(sr);
-            }
+            Debug.Log(hit.collider.gameObject.name);
+            if (hit.collider.gameObject.GetComponent<Building>() != null)
+                break;
+            if (hit.collider.gameObject.GetComponent<NPCController>() != null)
+                hit.collider.gameObject.GetComponent<NPCController>().Kill();
+
+            
         }
 
-        if (spritesUnderMouse.Count > 0)
-        {
-            // Sort sprites from topmost to bottommost
-            spritesUnderMouse.Sort((a, b) =>
-            {
-                int layerOrderA = SortingLayer.GetLayerValueFromID(a.sortingLayerID);
-                int layerOrderB = SortingLayer.GetLayerValueFromID(b.sortingLayerID);
-
-                if (layerOrderA != layerOrderB)
-                    return layerOrderB.CompareTo(layerOrderA);
-
-                if (a.sortingOrder != b.sortingOrder)
-                    return b.sortingOrder.CompareTo(a.sortingOrder);
-
-                // Lower Z means closer to the camera in 2D
-                return b.transform.position.z.CompareTo(a.transform.position.z);
-            });
-
-            SpriteRenderer topSprite = spritesUnderMouse[0];
-            NPCController npc = topSprite.GetComponent<NPCController>();
-
-            if (npc != null)
-            {
-                npc.Kill();
-                Debug.Log("NPC killed");
-            }
-        }
     }
 }

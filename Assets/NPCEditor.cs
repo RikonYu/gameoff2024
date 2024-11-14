@@ -18,7 +18,6 @@ public class NPCEditor : MonoBehaviour
     {
         if (SceneManager.GetActiveScene().name != "LevelEditor")
             return;
-        Debug.Log(SceneManager.GetActiveScene().name);
-        this.transform.parent.transform.position = new Vector2(Mathf.Round(this.transform.parent.transform.position.x)+0.5f, Mathf.Round(this.transform.parent.transform.position.y)+0.5f);
+        this.transform.position = new Vector2(Mathf.Round(this.transform.position.x-0.5f)+0.5f, Mathf.Round(this.transform.position.y-0.5f)+0.5f);
     }
 }

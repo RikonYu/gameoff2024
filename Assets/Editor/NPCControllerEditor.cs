@@ -118,7 +118,8 @@ public class NPCWaypointEditor : Editor
                 if (EditorGUI.EndChangeCheck())
                 {
                     Undo.RecordObject(npcController, "Move Waypoint");
-                    npcController.waypoints[i] = new Vector2(Mathf.Round(newPos.x)+0.5f, Mathf.Round(newPos.y)+0.5f);
+                    //npcController.waypoints[i] = new Vector2(Mathf.Round(newPos.x)+0.5f, Mathf.Round(newPos.y)+0.5f);
+                    npcController.waypoints[i] = new Vector2((newPos.x*2)/2, (newPos.y*2)/2);
                 }
             }
 

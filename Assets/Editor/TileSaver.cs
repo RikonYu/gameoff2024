@@ -7,13 +7,16 @@ public class TilemapEditor : EditorWindow
 {
     private static string saveDirectory = "Levels/";
 
+    private static Dictionary<string, GameObject> prefabDictionary = new Dictionary<string, GameObject>();
+
+
     [MenuItem("Tools/Save Tilemap Data")]
     public static void SaveTilemapData()
     {
 
         LevelData ans = new LevelData();
+        ans.buildings = new List<BuildingData>();
 
-        Tilemap buildingTiles = LevelEditorController.instance.BuildingTiles.GetComponent<Tilemap>();
         Tilemap colliderTiles = LevelEditorController.instance.ColliderTiles.GetComponent<Tilemap>();
 
 
@@ -24,25 +27,14 @@ public class TilemapEditor : EditorWindow
             return;
         }
 
+        List<Building> buildings = new List<Building>();
+        buildings.AddRange(GameObject.FindObjectsOfType<Building>());
+        foreach (var building in buildings)
+            ans.buildings.Add(building.GetData());
+
+
+
         List<TileData> tileDataList = new List<TileData>();
-        foreach (var position in buildingTiles.cellBounds.allPositionsWithin)
-        {
-            TileBase tile = buildingTiles.GetTile(position);
-            if (tile != null)
-            {
-                tileDataList.Add(new TileData
-                {
-                    position = new Vector3Int(position.x, position.y, position.z),
-                    tileName = tile.name,
-                    spriteName = tile is Tile ? ((Tile)tile).sprite.name : null
-                });
-            }
-        }
-
-        ans.buildingTiles = tileDataList;
-
-
-        tileDataList = new List<TileData>();
         foreach (var position in colliderTiles.cellBounds.allPositionsWithin)
         {
             TileBase tile = colliderTiles.GetTile(position);
@@ -88,6 +80,12 @@ public class TilemapEditor : EditorWindow
     public static void LoadTilemapData()
     {
 
+        GameObject[] prefabs = Resources.LoadAll<GameObject>("Prefabs");
+        foreach (GameObject prefab in prefabs)
+        {
+            prefabDictionary[prefab.name] = prefab;
+        }
+
         List<GameObject> npcPrefabs = new List<GameObject>();
         npcPrefabs.AddRange(Resources.LoadAll<GameObject>("Prefabs"));
 
@@ -99,11 +97,11 @@ public class TilemapEditor : EditorWindow
         var tilemap = LevelEditorController.instance.BuildingTiles.GetComponent<Tilemap>();
         tilemap.ClearAllTiles();
         ClearLevel();
-        foreach (var tileData in tilemapData.buildingTiles)
+
+        foreach (var building in tilemapData.buildings)
         {
-            Tile tile = ScriptableObject.CreateInstance<Tile>();
-            tile.sprite = Resources.Load<Sprite>("Sprites/" + tileData.spriteName);
-            tilemap.SetTile(tileData.position, tile);
+            var obj = Instantiate(prefabDictionary[building.prefabName]);
+            obj.transform.position = building.position;
         }
 
         tilemap = LevelEditorController.instance.ColliderTiles.GetComponent<Tilemap>();

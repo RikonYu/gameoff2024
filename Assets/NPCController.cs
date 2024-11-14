@@ -17,6 +17,8 @@ public class NPCController : MonoBehaviour
     {
         agent = gameObject.GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
+        if(this.waypoints.Count ==0)
+            agent.updatePosition = false;
         agent.updateUpAxis = false;
     }
 
@@ -26,6 +28,8 @@ public class NPCController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (this.waypoints.Count == 0)
+            return;
         agent.SetDestination(new Vector3(waypoints[currentWaypointInd].x, waypoints[currentWaypointInd].y, this.transform.position.z));
         //Debug.Log($"{this.transform.position}=>{waypoints[currentWaypointInd]}");
         if(Vector2.Distance(this.transform.position, waypoints[currentWaypointInd])<= 0.05f){

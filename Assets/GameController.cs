@@ -19,13 +19,24 @@ public class GameController : MonoBehaviour
 
     public List<GameObject> npcPrefabs = new List<GameObject>();
 
+
+    private static Dictionary<string, GameObject> prefabDictionary = new Dictionary<string, GameObject>();
+
+
     // Start is called before the first frame update
     public int CurrentLevel;
     public void Start()
     {
         npcPrefabs.AddRange(Resources.LoadAll<GameObject>("Prefabs"));
+        GameObject[] prefabs = Resources.LoadAll<GameObject>("Prefabs");
+        foreach (GameObject prefab in prefabs)
+        {
+            //Debug.Log(prefab.name);
+            prefabDictionary[prefab.name] = prefab;
+        }
         this.LoadLevel(this.CurrentLevel);
         navmesh.BuildNavMesh();
+        
     }
 
     // Update is called once per frame
@@ -40,12 +51,11 @@ public class GameController : MonoBehaviour
 
         LevelData tilemapData = JsonUtility.FromJson<LevelData>(json);
 
-        buildingtile.ClearAllTiles();
-        foreach (var tileData in tilemapData.buildingTiles)
+
+        foreach(var building in tilemapData.buildings)
         {
-            Tile tile = ScriptableObject.CreateInstance<Tile>();
-            tile.sprite = Resources.Load<Sprite>("Sprites/"+tileData.spriteName);
-            buildingtile.SetTile(tileData.position, tile);
+            var obj = Instantiate(prefabDictionary[building.prefabName]);
+            obj.transform.position = building.position;
         }
 
         obstacletile.ClearAllTiles();
@@ -58,9 +68,9 @@ public class GameController : MonoBehaviour
 
         foreach (var npcData in tilemapData.npcs)
         {
-            var npc = Instantiate(npcPrefabs.Find(x => x.name == npcData.spriteName), Environment.transform);
-            npc.transform.parent.transform.position = npcData.position;
-            npc.transform.localPosition = new Vector2(0, -0.75f);
+            var npc = Instantiate(npcPrefabs.Find(x => x.name == npcData.spriteName));
+            npc.transform.position = npcData.position;
+            //npc.transform.localPosition = new Vector2(0, -0.75f);
             //npc.transform.Find("collidersprite").gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/charcollider");
 
             npc.GetComponent<NPCController>().waypoints = npcData.waypoints;
