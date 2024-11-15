@@ -79,7 +79,6 @@ public class AimController : MonoBehaviour
 
         Collider2D[] colliders = Physics2D.OverlapPointAll(mouseWorldPos2D);
 
-        RaycastHit2D[] results;
 
         var hits = Physics2D.RaycastAll(mouseWorldPos, Vector3.forward, 20f);
 

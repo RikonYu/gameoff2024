@@ -956,6 +956,7 @@ MonoBehaviour:
   navmesh: {fileID: 2062149178}
   Environment: {fileID: 1000497027}
   npcPrefabs: []
+  EventPositions: []
   CurrentLevel: 1
 --- !u!1 &1000497027
 GameObject:

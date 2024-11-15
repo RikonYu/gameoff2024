@@ -4,7 +4,11 @@ using UnityEngine;
 
 public class Consts
 {
-
+    public static int DetectionRange = 1000;
+    public static int DetectionAngle = 30;
+    public static float GuardSpeed = 3f;
+    public static float GuardWarnedSpeed = 6f;
+    public static float WalkDistance = 0.002f;
 }
 [System.Serializable]
 public class BuildingData

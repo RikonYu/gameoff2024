@@ -8,6 +8,7 @@ using UnityEngine.AI;
 
 public class GameController : MonoBehaviour
 {
+    public static GameController instance;
     public Tilemap obstacletile;//not walkable
     public Tilemap bgtile;//walkable
     public Tilemap buildingtile;//does not affect navmesh
@@ -19,6 +20,7 @@ public class GameController : MonoBehaviour
 
     public List<GameObject> npcPrefabs = new List<GameObject>();
 
+    public List<Vector2> EventPositions= new List<Vector2>();
 
     private static Dictionary<string, GameObject> prefabDictionary = new Dictionary<string, GameObject>();
 
@@ -27,6 +29,7 @@ public class GameController : MonoBehaviour
     public int CurrentLevel;
     public void Start()
     {
+        instance = this;
         npcPrefabs.AddRange(Resources.LoadAll<GameObject>("Prefabs"));
         GameObject[] prefabs = Resources.LoadAll<GameObject>("Prefabs");
         foreach (GameObject prefab in prefabs)
@@ -115,4 +118,9 @@ public class GameController : MonoBehaviour
         }
     }
 
+    public void CreateBloodAt(Vector2 pos)
+    {
+        this.EventPositions.Add(pos);
+        Instantiate(prefabDictionary["blood"], pos, Quaternion.identity);
+    }
 }
