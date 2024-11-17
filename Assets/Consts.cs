@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class Consts
 {
-    public static int DetectionRange = 1000;
+    public static int DetectionRange = 10;
+    public static int DetectionPixelSize = 100;
     public static int DetectionAngle = 30;
-    public static float GuardSpeed = 3f;
-    public static float GuardWarnedSpeed = 6f;
+    public static float GuardSpeed = 2f;
+    public static float GuardWarnedMultiplier = 3f;
+    public static float GuardWarnDistance = 0.2f;
     public static float WalkDistance = 0.002f;
+    public static float AimCircleSize = 200f;
 }
 [System.Serializable]
 public class BuildingData

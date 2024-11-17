@@ -4,7 +4,6 @@ using UnityEngine.UI;
 [RequireComponent(typeof(Image))]
 public class TransparentCircleController : MonoBehaviour
 {
-    public float circleRadius = 75f; //
 
     private Material mat;
     private Canvas canvas;
@@ -13,9 +12,15 @@ public class TransparentCircleController : MonoBehaviour
     {
         Image img = GetComponent<Image>();
         mat = Instantiate(img.material);
+
+        mat.SetFloat("_CircleRadius", Consts.AimCircleSize);
+
         img.material = mat;
 
         canvas = GetComponentInParent<Canvas>();
+
+
+
     }
 
     void Update()
@@ -29,6 +34,6 @@ public class TransparentCircleController : MonoBehaviour
         mat.SetVector("_CirclePosition", new Vector4(mousePosition.x, mousePosition.y, 0, 0));
 
         // 设置圆形半径
-        mat.SetFloat("_CircleRadius", circleRadius);
+        mat.SetFloat("_CircleRadius", Consts.AimCircleSize);
     }
 }

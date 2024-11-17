@@ -24,9 +24,11 @@ public class GameController : MonoBehaviour
 
     private static Dictionary<string, GameObject> prefabDictionary = new Dictionary<string, GameObject>();
 
+    
 
     // Start is called before the first frame update
     public int CurrentLevel;
+    int LivingEnemyCouunt;
     public void Start()
     {
         instance = this;
@@ -38,7 +40,7 @@ public class GameController : MonoBehaviour
             prefabDictionary[prefab.name] = prefab;
         }
         this.LoadLevel(this.CurrentLevel);
-        navmesh.BuildNavMesh();
+        
         
     }
 
@@ -48,14 +50,16 @@ public class GameController : MonoBehaviour
         
     }
 
+    public void NextLevel() { LoadLevel(++this.CurrentLevel); }
+    public void ReplayLevel() { LoadLevel(this.CurrentLevel); }
     public void LoadLevel(int level)
     {
         string json = Resources.Load<TextAsset>(saveDirectory + level).text;
 
         LevelData tilemapData = JsonUtility.FromJson<LevelData>(json);
 
-
-        foreach(var building in tilemapData.buildings)
+        LivingEnemyCouunt = 0;
+        foreach (var building in tilemapData.buildings)
         {
             var obj = Instantiate(prefabDictionary[building.prefabName]);
             obj.transform.position = building.position;
@@ -69,16 +73,17 @@ public class GameController : MonoBehaviour
             obstacletile.SetTile(tileData.position, tile);
         }
 
+        
+        FillTilesInView();
+        navmesh.BuildNavMesh();
+
         foreach (var npcData in tilemapData.npcs)
         {
             var npc = Instantiate(npcPrefabs.Find(x => x.name == npcData.spriteName));
             npc.transform.position = npcData.position;
-            //npc.transform.localPosition = new Vector2(0, -0.75f);
-            //npc.transform.Find("collidersprite").gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/charcollider");
-
+            LivingEnemyCouunt++;
             npc.GetComponent<NPCController>().waypoints = npcData.waypoints;
         }
-        FillTilesInView();
     }
 
     void FillTilesInView()
@@ -118,9 +123,26 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void CreateBloodAt(Vector2 pos)
+    public void CharacterDead(GameObject obj)
+    {
+        LivingEnemyCouunt--;
+        this.CreateBloodAt(obj.transform.position);
+        if (LivingEnemyCouunt <= 0)
+        {
+            Debug.Log("win!");
+        }
+    }
+
+    void CreateBloodAt(Vector2 pos)
     {
         this.EventPositions.Add(pos);
-        Instantiate(prefabDictionary["blood"], pos, Quaternion.identity);
+        var obj = Instantiate(prefabDictionary["blood"], pos, Quaternion.identity);
+        obj.name = "blood";
     }
+
+    public void Warn()
+    {
+        Debug.Log("LOSE!");
+    }
+
 }

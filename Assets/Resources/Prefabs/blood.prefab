@@ -10,6 +10,8 @@ GameObject:
   m_Component:
   - component: {fileID: 6107047378217858968}
   - component: {fileID: 5248438438609401724}
+  - component: {fileID: 3415799353798236227}
+  - component: {fileID: 2734067598223612302}
   m_Layer: 0
   m_Name: blood
   m_TagString: Untagged
@@ -84,3 +86,58 @@ SpriteRenderer:
   m_WasSpriteAssigned: 1
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0
+--- !u!60 &3415799353798236227
+PolygonCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4571810900326024464}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 1
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0.5, y: 0.5}
+    oldSize: {x: 1, y: 1}
+    newSize: {x: 1, y: 1}
+    adaptiveTilingThreshold: 0.5
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Points:
+    m_Paths:
+    - - {x: -0.12504053, y: 0.4965663}
+      - {x: -0.5034342, y: -0.062092066}
+      - {x: -0.5034332, y: -0.2562127}
+      - {x: -0.37153816, y: -0.37215257}
+      - {x: 0.12878418, y: -0.5017216}
+      - {x: 0.29657698, y: -0.3636093}
+      - {x: 0.44318104, y: -0.24293804}
+      - {x: 0.50344324, y: 0.106916785}
+      - {x: 0.11845398, y: 0.50172186}
+--- !u!50 &2734067598223612302
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4571810900326024464}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 7

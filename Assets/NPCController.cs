@@ -17,6 +17,7 @@ public class NPCController : MonoBehaviour
     bool isWarned = false;
     Vector2 warnedPosition;
     NavMeshAgent agent;
+    Animator animator;
     void Start()
     {
         agent = gameObject.GetComponent<NavMeshAgent>();
@@ -26,23 +27,33 @@ public class NPCController : MonoBehaviour
             agent.updatePosition = false;
         agent.updateUpAxis = false;
         agent.speed = Consts.GuardSpeed;
-        
+        animator = this.transform.Find("sprite").gameObject.GetComponent<Animator>();
 
-        this.DrawDetection(Consts.DetectionRange, Consts.DetectionAngle);
+        this.DrawDetection(Consts.DetectionRange * Consts.DetectionPixelSize, Consts.DetectionAngle);
 
     }
 
     private void Update()
     {
         Vector2 currentPosition = this.transform.position;
-        Debug.Log((currentPosition - lastPosition).magnitude);
         if ((currentPosition - lastPosition).magnitude >= Consts.WalkDistance)
         {
             Vector2 diff = currentPosition - lastPosition;
             float angle = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
             this.transform.Find("detection").rotation = Quaternion.Euler(0, angle, 0);
         }
-        lastPosition = this.transform.position;
+
+        Vector2 directionToTarget = currentPosition - lastPosition;
+        if (directionToTarget.magnitude >= 1e-4)
+        {
+            float angleToTarget = Mathf.Atan2(directionToTarget.y, directionToTarget.x) * Mathf.Rad2Deg;
+            if ((angleToTarget <= 180 && angleToTarget >= 150)||(angleToTarget <=-150 && angleToTarget >= -180))
+                this.transform.Find("sprite").GetComponent<SpriteRenderer>().flipX = true;
+            else
+                this.transform.Find("sprite").GetComponent<SpriteRenderer>().flipX = false;
+        }
+
+        
 
         foreach(var i in GameController.instance.EventPositions)
         {
@@ -53,6 +64,17 @@ public class NPCController : MonoBehaviour
             }
 
         }
+
+        if (this.isWarned)
+        {
+            
+            animator.speed = 0.5f* Consts.GuardWarnedMultiplier;
+        }
+        else
+        {
+            animator.speed = 0.5f;
+        }
+        lastPosition = this.transform.position;
     }
 
     private void FixedUpdate()
@@ -60,7 +82,7 @@ public class NPCController : MonoBehaviour
         if(this.isWarned)
         {
             agent.SetDestination(warnedPosition);
-            this.agent.speed = Consts.GuardWarnedSpeed;
+            this.agent.speed = Consts.GuardSpeed * Consts.GuardWarnedMultiplier;
             return;
         }
         if (this.waypoints.Count == 0)
@@ -89,7 +111,7 @@ public class NPCController : MonoBehaviour
     public void Kill()
     {
         Destroy(this.gameObject);
-        GameController.instance.CreateBloodAt(this.transform.position);
+        GameController.instance.CharacterDead(this.gameObject);
     }
 
     void DrawDetection(int length, int angle)
@@ -145,11 +167,30 @@ public class NPCController : MonoBehaviour
         if (distance > Consts.DetectionRange) return false;
 
         float halfAngle = Consts.DetectionAngle * 0.5f;
-        float sectorDirection = transform.Find("detection").eulerAngles.z;
+
+        Vector2 movementDirection = (Vector2)this.transform.position - lastPosition;
+        if (movementDirection == Vector2.zero)
+        {
+            movementDirection = Vector2.right;
+        }
+
+        float sectorDirection = Mathf.Atan2(movementDirection.y, movementDirection.x) * Mathf.Rad2Deg;
+
         Vector2 directionToTarget = targetPosition - sectorCenter;
         float angleToTarget = Mathf.Atan2(directionToTarget.y, directionToTarget.x) * Mathf.Rad2Deg;
         float angleDifference = Mathf.DeltaAngle(sectorDirection, angleToTarget);
 
         return Mathf.Abs(angleDifference) <= halfAngle;
     }
+    private void OnTriggerEnter2D(Collider2D collision)
+    {
+        Debug.Log(collision.gameObject.name);
+        if (collision.gameObject.name == "blood")
+        {
+            GameController.instance.Warn();
+        }
+
+    }
+
+
 }

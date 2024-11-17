@@ -88,7 +88,7 @@ public class AimController : MonoBehaviour
 
         foreach (var hit in hits)
         {
-            Debug.Log(hit.collider.gameObject.name);
+            //Debug.Log(hit.collider.gameObject.name);
             if (hit.collider.gameObject.GetComponent<Building>() != null)
                 break;
             if (hit.collider.gameObject.GetComponent<NPCController>() != null)

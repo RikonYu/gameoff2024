@@ -6,7 +6,6 @@ using UnityEngine;
 public class LevelEditorController : MonoBehaviour
 {
     public static LevelEditorController instance;
-    public GameObject BuildingTiles;
     public GameObject ColliderTiles;
 
     public int CurrentLevel;

@@ -94,8 +94,6 @@ public class TilemapEditor : EditorWindow
 
         LevelData tilemapData = JsonUtility.FromJson<LevelData>(json);
 
-        var tilemap = LevelEditorController.instance.BuildingTiles.GetComponent<Tilemap>();
-        tilemap.ClearAllTiles();
         ClearLevel();
 
         foreach (var building in tilemapData.buildings)
@@ -104,7 +102,7 @@ public class TilemapEditor : EditorWindow
             obj.transform.position = building.position;
         }
 
-        tilemap = LevelEditorController.instance.ColliderTiles.GetComponent<Tilemap>();
+        var tilemap = LevelEditorController.instance.ColliderTiles.GetComponent<Tilemap>();
         tilemap.ClearAllTiles();
         foreach (var tileData in tilemapData.collisionTiles)
         {
@@ -127,9 +125,15 @@ public class TilemapEditor : EditorWindow
         }
     }
 
+    [MenuItem("Tools/Clear Tilemap Data")]
     public static void ClearLevel()
     {
         foreach(var npc in GameObject.FindObjectsOfType<NPCController>())
             Object.DestroyImmediate(npc.gameObject);
+
+        foreach (var building in GameObject.FindObjectsOfType<Building>())
+            Object.DestroyImmediate(building.gameObject);
+
+        LevelEditorController.instance.ColliderTiles.GetComponent<Tilemap>().ClearAllTiles();
     }
 }
