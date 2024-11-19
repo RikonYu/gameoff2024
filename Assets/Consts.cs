@@ -11,7 +11,9 @@ public class Consts
     public static float GuardWarnedMultiplier = 3f;
     public static float GuardWarnDistance = 0.2f;
     public static float WalkDistance = 0.002f;
-    public static float AimCircleSize = 200f;
+    public static float AimCircleSize = 175f;
+
+    public static int MaxLevel = 1;
 }
 [System.Serializable]
 public class BuildingData

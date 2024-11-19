@@ -32,13 +32,23 @@ public class GameController : MonoBehaviour
     public void Start()
     {
         instance = this;
-        npcPrefabs.AddRange(Resources.LoadAll<GameObject>("Prefabs"));
-        GameObject[] prefabs = Resources.LoadAll<GameObject>("Prefabs");
-        foreach (GameObject prefab in prefabs)
+
+        npcPrefabs.AddRange(Resources.LoadAll<GameObject>($"Prefabs"));
+        for (int i=1;i<=Consts.MaxLevel;i++)
+        {
+            GameObject[] prefabs = Resources.LoadAll<GameObject>($"Prefabs/{i}");
+            foreach (GameObject prefab in prefabs)
+            {
+                //Debug.Log(prefab.name);
+                prefabDictionary[prefab.name] = prefab;
+            }
+        }
+        foreach (GameObject prefab in Resources.LoadAll<GameObject>($"Prefabs"))
         {
             //Debug.Log(prefab.name);
             prefabDictionary[prefab.name] = prefab;
         }
+
         this.LoadLevel(this.CurrentLevel);
         
         

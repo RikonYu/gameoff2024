@@ -80,10 +80,14 @@ public class TilemapEditor : EditorWindow
     public static void LoadTilemapData()
     {
 
-        GameObject[] prefabs = Resources.LoadAll<GameObject>("Prefabs");
-        foreach (GameObject prefab in prefabs)
+        for (int i = 1; i <= Consts.MaxLevel; i++)
         {
-            prefabDictionary[prefab.name] = prefab;
+            GameObject[] prefabs = Resources.LoadAll<GameObject>($"Prefabs/{i}");
+            foreach (GameObject prefab in prefabs)
+            {
+                //Debug.Log(prefab.name);
+                prefabDictionary[prefab.name] = prefab;
+            }
         }
 
         List<GameObject> npcPrefabs = new List<GameObject>();
@@ -118,6 +122,7 @@ public class TilemapEditor : EditorWindow
 
         foreach (var npcData in tilemapData.npcs)
         {
+            Debug.Log(npcData.spriteName);
             var npc = Instantiate(npcPrefabs.Find(x => x.name == npcData.spriteName));
             npc.transform.position = npcData.position;
             npc.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Sprites/" + npcData.spriteName);

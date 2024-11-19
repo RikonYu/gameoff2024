@@ -17,7 +17,9 @@ public class NPCController : MonoBehaviour
     bool isWarned = false;
     Vector2 warnedPosition;
     NavMeshAgent agent;
+    SpriteRenderer sprite;
     Animator animator;
+    string unitName;
     void Start()
     {
         agent = gameObject.GetComponent<NavMeshAgent>();
@@ -28,8 +30,12 @@ public class NPCController : MonoBehaviour
         agent.updateUpAxis = false;
         agent.speed = Consts.GuardSpeed;
         animator = this.transform.Find("sprite").gameObject.GetComponent<Animator>();
+        sprite = this.transform.Find("sprite").gameObject.GetComponent<SpriteRenderer>();
 
+        unitName = sprite.sprite.name;
+        print(unitName);
         this.DrawDetection(Consts.DetectionRange * Consts.DetectionPixelSize, Consts.DetectionAngle);
+
 
     }
 
@@ -46,11 +52,28 @@ public class NPCController : MonoBehaviour
         Vector2 directionToTarget = currentPosition - lastPosition;
         if (directionToTarget.magnitude >= 1e-4)
         {
-            float angleToTarget = Mathf.Atan2(directionToTarget.y, directionToTarget.x) * Mathf.Rad2Deg;
-            if ((angleToTarget <= 180 && angleToTarget >= 150)||(angleToTarget <=-150 && angleToTarget >= -180))
+            float angle = Mathf.Atan2(directionToTarget.y, directionToTarget.x) * Mathf.Rad2Deg;
+            if (angle < 0)
+                angle += 360;
+
+            if (150<=angle && angle<=210)
                 this.transform.Find("sprite").GetComponent<SpriteRenderer>().flipX = true;
             else
                 this.transform.Find("sprite").GetComponent<SpriteRenderer>().flipX = false;
+
+            if (angle > 45 && angle < 135)
+            {
+                animator.Play($"{unitName}walkingN");
+            }
+            else if (angle > 225 && angle < 315)
+            {
+                animator.Play($"{unitName}walkingS");
+            }
+            else
+            {
+                animator.Play($"{unitName}walkingside");
+            }
+
         }
 
         
