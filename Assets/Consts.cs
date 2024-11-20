@@ -7,11 +7,14 @@ public class Consts
     public static int DetectionRange = 10;
     public static int DetectionPixelSize = 100;
     public static int DetectionAngle = 30;
-    public static float GuardSpeed = 2f;
+    public static float GuardSpeed = 1.2f;
+    public static float MobSpeed = 0.5f;
     public static float GuardWarnedMultiplier = 3f;
     public static float GuardWarnDistance = 0.2f;
     public static float WalkDistance = 0.002f;
     public static float AimCircleSize = 175f;
+
+    
 
     public static int MaxLevel = 1;
 }

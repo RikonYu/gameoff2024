@@ -33,7 +33,6 @@ public class NPCController : MonoBehaviour
         sprite = this.transform.Find("sprite").gameObject.GetComponent<SpriteRenderer>();
 
         unitName = sprite.sprite.name;
-        print(unitName);
         this.DrawDetection(Consts.DetectionRange * Consts.DetectionPixelSize, Consts.DetectionAngle);
 
 
@@ -110,9 +109,10 @@ public class NPCController : MonoBehaviour
         }
         if (this.waypoints.Count == 0)
             return;
+
         agent.SetDestination(new Vector3(waypoints[currentWaypointInd].x, waypoints[currentWaypointInd].y, this.transform.position.z));
-        //Debug.Log($"{this.transform.position}=>{waypoints[currentWaypointInd]}");
-        if(Vector2.Distance(this.transform.position, waypoints[currentWaypointInd])<= 0.05f){
+        Debug.Log($"{this.transform.position}=>{waypoints[currentWaypointInd]}");
+        if(Vector2.Distance(this.transform.position, waypoints[currentWaypointInd])<= 0.1f){
             if (isForward)
                 currentWaypointInd++;
             else

@@ -72,6 +72,7 @@ public class GameController : MonoBehaviour
         foreach (var building in tilemapData.buildings)
         {
             var obj = Instantiate(prefabDictionary[building.prefabName]);
+            //Debug.Log($"{building.prefabName}, {obj.GetComponent<SpriteRenderer>().sprite.name}");
             obj.transform.position = building.position;
         }
 
