@@ -1,0 +1,1 @@
+{"buildings":[{"position":{"x":0.0,"y":3.0},"prefabName":"b51"}],"collisionTiles":[],"npcs":[{"prefabName":"sprite","spriteName":"guard","position":{"x":7.5,"y":-0.5},"waypoints":[{"x":3.0,"y":-0.5}]},{"prefabName":"sprite","spriteName":"guard","position":{"x":-7.5,"y":-0.5},"waypoints":[{"x":-3.0,"y":-0.5}]}]}

@@ -9,6 +9,10 @@ public class Consts
     public static int DetectionAngle = 30;
     public static float GuardSpeed = 1.2f;
     public static float MobSpeed = 0.5f;
+    public static float MobStandTime = 5f;
+    public static float GuardStandTime = 3f;
+
+
     public static float GuardWarnedMultiplier = 3f;
     public static float GuardWarnDistance = 0.2f;
     public static float WalkDistance = 0.002f;
@@ -16,7 +20,7 @@ public class Consts
 
     
 
-    public static int MaxLevel = 1;
+    public static int MaxLevel = 5;
 }
 [System.Serializable]
 public class BuildingData

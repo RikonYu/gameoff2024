@@ -100,8 +100,12 @@ public class TilemapEditor : EditorWindow
 
         ClearLevel();
 
+        foreach (var i in prefabDictionary.Keys)
+            Debug.Log(i);
+
         foreach (var building in tilemapData.buildings)
         {
+            
             var obj = Instantiate(prefabDictionary[building.prefabName]);
             obj.transform.position = building.position;
         }

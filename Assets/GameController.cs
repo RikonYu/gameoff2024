@@ -28,7 +28,7 @@ public class GameController : MonoBehaviour
 
     // Start is called before the first frame update
     public int CurrentLevel;
-    int LivingEnemyCouunt;
+    int LivingEnemyCount;
     public void Start()
     {
         instance = this;
@@ -68,11 +68,10 @@ public class GameController : MonoBehaviour
 
         LevelData tilemapData = JsonUtility.FromJson<LevelData>(json);
 
-        LivingEnemyCouunt = 0;
+        LivingEnemyCount = 0;
         foreach (var building in tilemapData.buildings)
         {
             var obj = Instantiate(prefabDictionary[building.prefabName]);
-            //Debug.Log($"{building.prefabName}, {obj.GetComponent<SpriteRenderer>().sprite.name}");
             obj.transform.position = building.position;
         }
 
@@ -92,7 +91,7 @@ public class GameController : MonoBehaviour
         {
             var npc = Instantiate(npcPrefabs.Find(x => x.name == npcData.spriteName));
             npc.transform.position = npcData.position;
-            LivingEnemyCouunt++;
+            LivingEnemyCount++;
             npc.GetComponent<NPCController>().waypoints = npcData.waypoints;
         }
     }
@@ -136,9 +135,9 @@ public class GameController : MonoBehaviour
 
     public void CharacterDead(GameObject obj)
     {
-        LivingEnemyCouunt--;
+        LivingEnemyCount--;
         this.CreateBloodAt(obj.transform.position);
-        if (LivingEnemyCouunt <= 0)
+        if (LivingEnemyCount <= 0)
         {
             Debug.Log("win!");
         }
