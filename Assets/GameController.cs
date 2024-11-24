@@ -71,7 +71,7 @@ public class GameController : MonoBehaviour
         LivingEnemyCount = 0;
         foreach (var building in tilemapData.buildings)
         {
-            var obj = Instantiate(prefabDictionary[building.prefabName]);
+            var obj = Instantiate(prefabDictionary[building.prefabName]);z
             obj.transform.position = building.position;
         }
 

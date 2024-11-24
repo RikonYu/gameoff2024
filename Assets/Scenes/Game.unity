@@ -1465,7 +1465,7 @@ MonoBehaviour:
   Environment: {fileID: 1000497027}
   npcPrefabs: []
   EventPositions: []
-  CurrentLevel: 5
+  CurrentLevel: 6
 --- !u!1 &882184586
 GameObject:
   m_ObjectHideFlags: 0
