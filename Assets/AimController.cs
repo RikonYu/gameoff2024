@@ -36,6 +36,7 @@ public class AimController : MonoBehaviour
         {
             if (IsPointerOverUIElement() && IsPointerOverSpecificUIElement(pauseButton.gameObject))
                 {
+                GameController.instance.pauseGame();
                     pauseMenu.SetActive(true);
                 }
             else

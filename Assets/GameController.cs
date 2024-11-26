@@ -24,11 +24,13 @@ public class GameController : MonoBehaviour
 
     private static Dictionary<string, GameObject> prefabDictionary = new Dictionary<string, GameObject>();
 
-    
+
+    public bool HasBoss = false;
 
     // Start is called before the first frame update
     public int CurrentLevel;
     int LivingEnemyCount;
+    int livingBossCount;
     public void Start()
     {
         instance = this;
@@ -64,6 +66,11 @@ public class GameController : MonoBehaviour
     public void ReplayLevel() { LoadLevel(this.CurrentLevel); }
     public void LoadLevel(int level)
     {
+        if (level > Consts.MaxLevel)
+        {
+            Debug.Log("WIN!");
+            return;
+        }
         string json = Resources.Load<TextAsset>(saveDirectory + level).text;
 
         LevelData tilemapData = JsonUtility.FromJson<LevelData>(json);
@@ -71,7 +78,7 @@ public class GameController : MonoBehaviour
         LivingEnemyCount = 0;
         foreach (var building in tilemapData.buildings)
         {
-            var obj = Instantiate(prefabDictionary[building.prefabName]);z
+            var obj = Instantiate(prefabDictionary[building.prefabName]);
             obj.transform.position = building.position;
         }
 
@@ -137,9 +144,9 @@ public class GameController : MonoBehaviour
     {
         LivingEnemyCount--;
         this.CreateBloodAt(obj.transform.position);
-        if (LivingEnemyCount <= 0)
+        if (LivingEnemyCount <= 0 || (this.HasBoss&& livingBossCount<=0))
         {
-            Debug.Log("win!");
+            UIController.instance.ShowWin();
         }
     }
 
@@ -155,4 +162,16 @@ public class GameController : MonoBehaviour
         Debug.Log("LOSE!");
     }
 
+    public void pauseGame()
+    {
+        Time.timeScale = 0;
+    }
+    public void resumeGame()
+    {
+        Time.timeScale = 1;
+    }
+    public void returnToMain()
+    {
+
+    }
 }

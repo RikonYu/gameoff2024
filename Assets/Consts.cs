@@ -20,7 +20,7 @@ public class Consts
 
     
 
-    public static int MaxLevel = 5;
+    public static int MaxLevel = 9;
 }
 [System.Serializable]
 public class BuildingData

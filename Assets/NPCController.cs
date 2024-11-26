@@ -20,8 +20,10 @@ public class NPCController : MonoBehaviour
     SpriteRenderer sprite;
     Animator animator;
     string unitName;
+    public bool IsBoss = false;
     void Start()
     {
+
         agent = gameObject.GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         this.lastPosition = this.transform.position;
@@ -44,6 +46,10 @@ public class NPCController : MonoBehaviour
             agent.speed = Consts.GuardSpeed;
             maxWaitingTime = Consts.GuardStandTime;
         }
+        if (name == "boss" || name == "mafia")
+            IsBoss = true;
+        else
+            IsBoss = false;
         waitingTime = maxWaitingTime;
 
         unitName = sprite.sprite.name;
