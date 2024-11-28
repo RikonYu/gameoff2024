@@ -1503,7 +1503,7 @@ MonoBehaviour:
   npcPrefabs: []
   EventPositions: []
   HasBoss: 0
-  CurrentLevel: 6
+  CurrentLevel: 4
 --- !u!1 &882184586
 GameObject:
   m_ObjectHideFlags: 0

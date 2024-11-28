@@ -31,6 +31,9 @@ public class GameController : MonoBehaviour
     public int CurrentLevel;
     int LivingEnemyCount;
     int livingBossCount;
+
+    System.Action SpecialRule;
+
     public void Start()
     {
         instance = this;
@@ -59,7 +62,7 @@ public class GameController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        SpecialRule?.Invoke();
     }
 
     public void NextLevel() { LoadLevel(++this.CurrentLevel); }
@@ -76,6 +79,15 @@ public class GameController : MonoBehaviour
         LevelData tilemapData = JsonUtility.FromJson<LevelData>(json);
 
         LivingEnemyCount = 0;
+        this.EventPositions.Clear();
+        foreach (var npc in FindObjectsOfType<NPCController>())
+            DestroyImmediate(npc.gameObject);
+        foreach (var b in FindObjectsOfType<SpriteRenderer>())
+            if (b.sprite.name == "blood")
+                DestroyImmediate(b.gameObject);
+        foreach (var c in FindObjectsOfType<Building>())
+            DestroyImmediate(c.gameObject);
+
         foreach (var building in tilemapData.buildings)
         {
             var obj = Instantiate(prefabDictionary[building.prefabName]);
@@ -101,6 +113,10 @@ public class GameController : MonoBehaviour
             LivingEnemyCount++;
             npc.GetComponent<NPCController>().waypoints = npcData.waypoints;
         }
+
+
+        SpecialRule = SpecialRules.ApplyLevel(this.CurrentLevel);
+
     }
 
     void FillTilesInView()
@@ -140,9 +156,11 @@ public class GameController : MonoBehaviour
         }
     }
 
-    public void CharacterDead(GameObject obj)
+    public void CharacterDead(GameObject obj, bool IsBoss)
     {
         LivingEnemyCount--;
+        if (IsBoss)
+            livingBossCount--;
         this.CreateBloodAt(obj.transform.position);
         if (LivingEnemyCount <= 0 || (this.HasBoss&& livingBossCount<=0))
         {
@@ -159,6 +177,7 @@ public class GameController : MonoBehaviour
 
     public void Warn()
     {
+        UIController.instance.ShowLose();
         Debug.Log("LOSE!");
     }
 

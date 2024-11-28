@@ -8,8 +8,8 @@ public class Consts
     public static int DetectionPixelSize = 100;
     public static int DetectionAngle = 30;
     public static float GuardSpeed = 1.2f;
-    public static float MobSpeed = 0.5f;
-    public static float MobStandTime = 5f;
+    public static float MobSpeed = 4f;
+    public static float MobStandTime = 1f;
     public static float GuardStandTime = 3f;
 
 

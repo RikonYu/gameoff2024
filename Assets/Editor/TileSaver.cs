@@ -55,6 +55,7 @@ public class TilemapEditor : EditorWindow
         var npcs = FindObjectsOfType<NPCController>();
         foreach(var npc in npcs)
         {
+            Debug.Log($"{npc.transform.Find("sprite").name}, {npc.transform.Find("sprite").GetComponent<SpriteRenderer>().sprite.name}");
             ans.npcs.Add(new NPCData {
                 prefabName=npc.transform.Find("sprite").name, 
                 spriteName = npc.transform.Find("sprite").GetComponent<SpriteRenderer>().sprite.name,

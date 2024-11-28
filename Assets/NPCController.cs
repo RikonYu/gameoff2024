@@ -14,6 +14,7 @@ public class NPCController : MonoBehaviour
     Vector2 lastPosition;
 
     bool isForward = true;
+    public bool isMoving = true;
     public bool isWarned = false;
     Vector2 warnedPosition;
     NavMeshAgent agent;
@@ -21,6 +22,8 @@ public class NPCController : MonoBehaviour
     Animator animator;
     string unitName;
     public bool IsBoss = false;
+
+
     void Start()
     {
 
@@ -35,11 +38,12 @@ public class NPCController : MonoBehaviour
         
         animator = this.transform.Find("sprite").gameObject.GetComponent<Animator>();
         sprite = this.transform.Find("sprite").gameObject.GetComponent<SpriteRenderer>();
-        string name = sprite.name;
+        string name = sprite.sprite.name;
         if(name.Contains("mob"))
         {
             agent.speed = Consts.MobSpeed;
             maxWaitingTime = Consts.MobStandTime;
+
         }
         else
         {
@@ -53,12 +57,16 @@ public class NPCController : MonoBehaviour
         waitingTime = maxWaitingTime;
 
         unitName = sprite.sprite.name;
-        this.DrawDetection(Consts.DetectionRange * Consts.DetectionPixelSize, Consts.DetectionAngle);
-
+        if (name.Contains("guard"))
+        {
+            this.DrawDetection(Consts.DetectionRange * Consts.DetectionPixelSize, Consts.DetectionAngle);
+        }
+        else
+            this.transform.Find("detection").gameObject.SetActive(false);
 
     }
-    float maxWaitingTime = 0f;
-    float waitingTime = 0f;
+    public float maxWaitingTime = 0f;
+    public float waitingTime = 0f;
     private void Update()
     {
         Vector2 currentPosition = this.transform.position;
@@ -122,12 +130,24 @@ public class NPCController : MonoBehaviour
         lastPosition = this.transform.position;
     }
 
+    void SetDestination(Vector2 pos)
+    {
+        transform.position = Vector2.MoveTowards(transform.position, pos, this.agent.speed * Time.deltaTime);
+    }
     private void FixedUpdate()
     {
+        if (!this.isMoving)
+        {
+            this.animator.speed = 0;
+            return;
+        }
+        else
+            this.animator.speed = 1f;
+            
         if(this.isWarned)
         {
             StartAnim();
-            agent.SetDestination(warnedPosition);
+            SetDestination(warnedPosition);
             this.agent.speed = Consts.GuardSpeed * Consts.GuardWarnedMultiplier;
             return;
         }
@@ -135,12 +155,16 @@ public class NPCController : MonoBehaviour
         if (this.waypoints.Count == 0)
             return;
 
-        agent.SetDestination(new Vector3(waypoints[currentWaypointInd].x, waypoints[currentWaypointInd].y, this.transform.position.z));
-        if(Vector2.Distance(this.transform.position, waypoints[currentWaypointInd])<= 0.1f){
+        //agent.SetDestination(waypoints[currentWaypointInd]);
+        SetDestination(waypoints[currentWaypointInd]);
+
+        if (Vector2.Distance(this.transform.position, waypoints[currentWaypointInd])<= 0.1f){
 /*            agent.radius = 1e-4f;
             agent.height = 1e-4f;*/
             if (this.waitingTime >= this.maxWaitingTime)
             {
+                if (this.IsBoss)
+                    Debug.Log($"{this.waitingTime}, {currentWaypointInd}");
                 this.waitingTime = 0f;
                 StartAnim();
 
@@ -192,7 +216,7 @@ public class NPCController : MonoBehaviour
     public void Kill()
     {
         Destroy(this.gameObject);
-        GameController.instance.CharacterDead(this.gameObject);
+        GameController.instance.CharacterDead(this.gameObject, this.IsBoss);
     }
 
     void DrawDetection(int length, int angle)

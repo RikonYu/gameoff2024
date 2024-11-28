@@ -36,7 +36,7 @@ public class UIController : MonoBehaviour
     {
         WinMenu.SetActive(false);
     }
-    public void SohwLose()
+    public void ShowLose()
     {
         LoseMenu.SetActive(true);
     }

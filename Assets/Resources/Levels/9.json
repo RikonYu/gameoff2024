@@ -1,0 +1,1 @@
+{"buildings":[{"position":{"x":0.0,"y":0.0},"prefabName":"BuildingBase"}],"collisionTiles":[],"npcs":[{"prefabName":"sprite","spriteName":"boss","position":{"x":3.5,"y":-1.5},"waypoints":[{"x":3.5,"y":-1.5},{"x":-5.0,"y":-1.5}]}]}
