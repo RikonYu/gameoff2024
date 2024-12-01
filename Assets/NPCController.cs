@@ -16,30 +16,32 @@ public class NPCController : MonoBehaviour
     bool isForward = true;
     public bool isMoving = true;
     public bool isWarned = false;
-    Vector2 warnedPosition;
+    public Vector2 warnedPosition;
     NavMeshAgent agent;
     SpriteRenderer sprite;
     Animator animator;
     string unitName;
-    public bool IsBoss = false;
-
+    public bool IsBoss { get => this.transform.Find("sprite").gameObject.GetComponent<SpriteRenderer>().sprite.name.Contains("boss");}
 
     void Start()
     {
-
+        this.Init();
+    }
+    public void Init()
+    {
         agent = gameObject.GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         this.lastPosition = this.transform.position;
-        if(this.waypoints.Count ==0)
+        if (this.waypoints.Count == 0)
             agent.updatePosition = false;
         agent.updateUpAxis = false;
         agent.avoidancePriority = Random.Range(0, 100);
-        
-        
+
+
         animator = this.transform.Find("sprite").gameObject.GetComponent<Animator>();
         sprite = this.transform.Find("sprite").gameObject.GetComponent<SpriteRenderer>();
         string name = sprite.sprite.name;
-        if(name.Contains("mob"))
+        if (name.Contains("mob"))
         {
             agent.speed = Consts.MobSpeed;
             maxWaitingTime = Consts.MobStandTime;
@@ -50,10 +52,7 @@ public class NPCController : MonoBehaviour
             agent.speed = Consts.GuardSpeed;
             maxWaitingTime = Consts.GuardStandTime;
         }
-        if (name == "boss" || name == "mafia")
-            IsBoss = true;
-        else
-            IsBoss = false;
+
         waitingTime = maxWaitingTime;
 
         unitName = sprite.sprite.name;
@@ -63,7 +62,6 @@ public class NPCController : MonoBehaviour
         }
         else
             this.transform.Find("detection").gameObject.SetActive(false);
-
     }
     public float maxWaitingTime = 0f;
     public float waitingTime = 0f;
@@ -90,6 +88,7 @@ public class NPCController : MonoBehaviour
                 else
                     this.transform.Find("sprite").GetComponent<SpriteRenderer>().flipX = false;
 
+
                 if (angle > 45 && angle < 135)
                 {
                     animator.Play($"{unitName}walkingN");
@@ -107,7 +106,7 @@ public class NPCController : MonoBehaviour
         }
 
         
-
+        if(!GameController.instance.DoNotWarn)
         foreach(var i in GameController.instance.EventPositions)
         {
             if (IsTargetInSector(i))
@@ -163,8 +162,8 @@ public class NPCController : MonoBehaviour
             agent.height = 1e-4f;*/
             if (this.waitingTime >= this.maxWaitingTime)
             {
-                if (this.IsBoss)
-                    Debug.Log($"{this.waitingTime}, {currentWaypointInd}");
+/*                if (this.IsBoss)
+                    Debug.Log($"{this.waitingTime}, {currentWaypointInd}");*/
                 this.waitingTime = 0f;
                 StartAnim();
 
@@ -199,7 +198,7 @@ public class NPCController : MonoBehaviour
     void StopAnim()
     {
         animator.speed = 0;
-        animator.Play(animator.GetCurrentAnimatorClipInfo(0)[0].clip.name,0,0);
+        //animator.Play(animator.GetCurrentAnimatorClipInfo(0)[0].clip.name,0,0);
     }
     void StartAnim()
     {

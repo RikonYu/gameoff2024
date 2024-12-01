@@ -27,6 +27,8 @@ public class GameController : MonoBehaviour
 
     public bool HasBoss = false;
 
+    public int LastStageBoss = 4;
+
     // Start is called before the first frame update
     public int CurrentLevel;
     int LivingEnemyCount;
@@ -69,11 +71,24 @@ public class GameController : MonoBehaviour
     public void ReplayLevel() { LoadLevel(this.CurrentLevel); }
     public void LoadLevel(int level)
     {
+        hasEnded = false;
+        try
+        {
+            AimController.instance.shootSound.Stop();
+            AimController.instance.reloadSound.Stop();
+        }
+        catch
+        {
+            
+        }
+        Time.timeScale = 1;
+        HasBoss = false;
         if (level > Consts.MaxLevel)
         {
             Debug.Log("WIN!");
             return;
         }
+        DoNotWarn = false;
         string json = Resources.Load<TextAsset>(saveDirectory + level).text;
 
         LevelData tilemapData = JsonUtility.FromJson<LevelData>(json);
@@ -110,12 +125,16 @@ public class GameController : MonoBehaviour
         {
             var npc = Instantiate(npcPrefabs.Find(x => x.name == npcData.spriteName));
             npc.transform.position = npcData.position;
+
+            if (npc.GetComponent<NPCController>().IsBoss)
+                livingBossCount++;
             LivingEnemyCount++;
             npc.GetComponent<NPCController>().waypoints = npcData.waypoints;
         }
 
 
-        SpecialRule = SpecialRules.ApplyLevel(this.CurrentLevel);
+        SpecialRule = SpecialRules.ApplyLevelUpdate(this.CurrentLevel);
+        SpecialRules.ApplyLevelInit(this.CurrentLevel).Invoke();
 
     }
 
@@ -155,7 +174,22 @@ public class GameController : MonoBehaviour
             }
         }
     }
+    bool hasEnded=false;
+    public void Lose()
+    {
+        if (hasEnded) return;
+        hasEnded = true;
+        UIController.instance.ShowLose();
+        Debug.Log("LOSE!");
+    }
 
+    public void Win()
+    {
+        if (hasEnded) return;
+        hasEnded = true;
+        Time.timeScale = 0;
+        UIController.instance.ShowWin();
+    }
     public void CharacterDead(GameObject obj, bool IsBoss)
     {
         LivingEnemyCount--;
@@ -164,21 +198,24 @@ public class GameController : MonoBehaviour
         this.CreateBloodAt(obj.transform.position);
         if (LivingEnemyCount <= 0 || (this.HasBoss&& livingBossCount<=0))
         {
-            UIController.instance.ShowWin();
+            Win();
         }
     }
 
     void CreateBloodAt(Vector2 pos)
     {
+
         this.EventPositions.Add(pos);
         var obj = Instantiate(prefabDictionary["blood"], pos, Quaternion.identity);
         obj.name = "blood";
     }
 
+    public bool DoNotWarn = false;
     public void Warn()
     {
-        UIController.instance.ShowLose();
-        Debug.Log("LOSE!");
+        if (DoNotWarn)
+            return;
+        Lose();
     }
 
     public void pauseGame()

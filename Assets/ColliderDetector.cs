@@ -18,7 +18,6 @@ public class ColliderDetector : MonoBehaviour
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
-        Debug.Log(collision.gameObject.name);
         if (collision.gameObject.name == "blood" && this.transform.parent.gameObject.GetComponent<NPCController>().isWarned)
         {
             GameController.instance.Warn();

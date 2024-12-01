@@ -13,12 +13,16 @@ public class AimController : MonoBehaviour
     public GameObject pauseMenu;
     public GameObject pauseButton;
 
+    public AudioSource shootSound, reloadSound;
+    public static AimController instance;
     void Start()
     {
+        instance = this;
         rectTransform = GetComponent<RectTransform>();
         canvas = GetComponentInParent<Canvas>();
     }
 
+    float shootCooldown = 0f;
     void Update()
     {
         Vector2 mousePosition = Input.mousePosition;
@@ -32,8 +36,18 @@ public class AimController : MonoBehaviour
 
         rectTransform.anchoredPosition = anchoredPosition;
 
+        shootCooldown -= Time.deltaTime;
         if (Input.GetMouseButtonDown(0))
         {
+            if (shootCooldown > 0f)
+            {
+
+                return;
+            }
+
+            StartCoroutine(shootandreload());
+
+            shootCooldown = Consts.ShootCooldown;
             if (IsPointerOverUIElement() && IsPointerOverSpecificUIElement(pauseButton.gameObject))
                 {
                 GameController.instance.pauseGame();
@@ -50,6 +64,17 @@ public class AimController : MonoBehaviour
     bool IsPointerOverUIElement()
     {
         return EventSystem.current.IsPointerOverGameObject();
+    }
+
+    private System.Collections.IEnumerator shootandreload()
+    {
+        shootSound.Play();
+
+        while (shootSound.isPlaying)
+        {
+            yield return null;
+        }
+        reloadSound.Play();
     }
 
     bool IsPointerOverSpecificUIElement(GameObject target)
