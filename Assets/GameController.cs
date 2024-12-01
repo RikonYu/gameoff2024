@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Tilemaps;
-using NavMeshPlus.Components;
-using NavMeshPlus.Extensions;
 using UnityEngine.AI;
+using UnityEngine.UI;
 
 public class GameController : MonoBehaviour
 {
@@ -15,7 +14,6 @@ public class GameController : MonoBehaviour
 
     private static string saveDirectory = "Levels/";
 
-    public NavMeshSurface navmesh;
     public GameObject Environment;
 
     public List<GameObject> npcPrefabs = new List<GameObject>();
@@ -69,13 +67,65 @@ public class GameController : MonoBehaviour
 
     public void NextLevel() { LoadLevel(++this.CurrentLevel); }
     public void ReplayLevel() { LoadLevel(this.CurrentLevel); }
+
+    public GameObject h1, h2, h3, h4;
+
+    private IEnumerator FadeOutAndDisable(Image image)
+    {
+        image.gameObject.SetActive(true);
+
+        // 等待1秒钟
+        yield return new WaitForSeconds(1f);
+
+        float elapsedTime = 0f;
+        float fadeDuration = 1f;  // 渐变到透明的时间
+
+        // 渐变透明度
+        Color initialColor = image.color;
+        while (elapsedTime < fadeDuration)
+        {
+            elapsedTime += Time.deltaTime;
+            float alpha = Mathf.Lerp(initialColor.a, 0f, elapsedTime / fadeDuration);
+            image.color = new Color(initialColor.r, initialColor.g, initialColor.b, alpha);
+            yield return null;
+        }
+
+        // 完成后透明度为0
+        image.color = new Color(initialColor.r, initialColor.g, initialColor.b, 0f);
+
+        // 禁用游戏对象
+        image.gameObject.SetActive(false);
+    }
     public void LoadLevel(int level)
     {
+        h1.SetActive(false);
+        h2.SetActive(false);
+        h3.SetActive(false);
+        h4.SetActive(false);
+
+        switch (level)
+        {
+            case 1:
+                StartCoroutine(FadeOutAndDisable(h1.GetComponent<Image>()));
+                h1.SetActive(true);
+                break;
+            case 2:
+                StartCoroutine(FadeOutAndDisable(h2.GetComponent<Image>()));
+                break;
+            case 4:
+                StartCoroutine(FadeOutAndDisable(h3.GetComponent<Image>()));
+                break;
+            case 8:
+                StartCoroutine(FadeOutAndDisable(h4.GetComponent<Image>()));
+                break;
+
+        }
         hasEnded = false;
         try
         {
             AimController.instance.shootSound.Stop();
             AimController.instance.reloadSound.Stop();
+            AimController.instance.shootCooldown = 0;
         }
         catch
         {
@@ -119,7 +169,6 @@ public class GameController : MonoBehaviour
 
         
         FillTilesInView();
-        navmesh.BuildNavMesh();
 
         foreach (var npcData in tilemapData.npcs)
         {
@@ -188,7 +237,10 @@ public class GameController : MonoBehaviour
         if (hasEnded) return;
         hasEnded = true;
         Time.timeScale = 0;
-        UIController.instance.ShowWin();
+        if (CurrentLevel == Consts.MaxLevel)
+            UIController.instance.End();
+        else
+            UIController.instance.ShowWin();
     }
     public void CharacterDead(GameObject obj, bool IsBoss)
     {
@@ -228,6 +280,6 @@ public class GameController : MonoBehaviour
     }
     public void returnToMain()
     {
-
+        Application.Quit();
     }
 }

@@ -22,7 +22,7 @@ public class AimController : MonoBehaviour
         canvas = GetComponentInParent<Canvas>();
     }
 
-    float shootCooldown = 0f;
+    public float shootCooldown = 0f;
     void Update()
     {
         Vector2 mousePosition = Input.mousePosition;

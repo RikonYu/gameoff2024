@@ -116,7 +116,6 @@ public class SpecialRules
                         if (mobs[0].transform.position.x >= 5f)
                             GameController.instance.Warn();
                     }
-                    Debug.Log(mobs.Count);
                     //var mob1 = mobs.Find(x=> x.waypoints[0].)
 
                 };
@@ -129,6 +128,13 @@ public class SpecialRules
                     var bossRight = new Vector2(0.5f, -1.5f);
                     var bossLeft = new Vector2(-1.5f, -1.5f);
 
+                    if (boss == null)
+                    {
+                        GameController.instance.Win();
+                        return;
+                    }
+                        
+
                     if (reportMob == null)
                     {
                         boss.isMoving = true;
@@ -139,6 +145,7 @@ public class SpecialRules
                             GameController.instance.Warn();
                         return;
                     }
+
                     if (Vector2.Distance(reportMob.transform.position, new Vector2(-2f, -1.5f)) <= 0.1f)
                     {
                         if (Vector2.Distance(boss.transform.position, bossRight) <= 0.1f)

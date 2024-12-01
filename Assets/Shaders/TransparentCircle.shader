@@ -2,6 +2,7 @@
 {
     Properties
     {
+        _MainTex("Base Texture", 2D) = "white" { }
         _Color("Color", Color) = (0,0,0,1)
         _CircleRadius("Circle Radius", Float) = 50
         _ScreenResolution("Screen Resolution", Vector) = (1920,1080,0,0)

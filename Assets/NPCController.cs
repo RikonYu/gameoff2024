@@ -17,9 +17,9 @@ public class NPCController : MonoBehaviour
     public bool isMoving = true;
     public bool isWarned = false;
     public Vector2 warnedPosition;
-    NavMeshAgent agent;
     SpriteRenderer sprite;
     Animator animator;
+    float speed;
     string unitName;
     public bool IsBoss { get => this.transform.Find("sprite").gameObject.GetComponent<SpriteRenderer>().sprite.name.Contains("boss");}
 
@@ -29,27 +29,22 @@ public class NPCController : MonoBehaviour
     }
     public void Init()
     {
-        agent = gameObject.GetComponent<NavMeshAgent>();
-        agent.updateRotation = false;
         this.lastPosition = this.transform.position;
-        if (this.waypoints.Count == 0)
-            agent.updatePosition = false;
-        agent.updateUpAxis = false;
-        agent.avoidancePriority = Random.Range(0, 100);
 
+
+        
 
         animator = this.transform.Find("sprite").gameObject.GetComponent<Animator>();
         sprite = this.transform.Find("sprite").gameObject.GetComponent<SpriteRenderer>();
         string name = sprite.sprite.name;
         if (name.Contains("mob"))
         {
-            agent.speed = Consts.MobSpeed;
             maxWaitingTime = Consts.MobStandTime;
-
+            speed = Consts.MobSpeed;
         }
         else
         {
-            agent.speed = Consts.GuardSpeed;
+            speed = Consts.GuardSpeed;
             maxWaitingTime = Consts.GuardStandTime;
         }
 
@@ -68,7 +63,7 @@ public class NPCController : MonoBehaviour
     private void Update()
     {
         Vector2 currentPosition = this.transform.position;
-        if ((currentPosition - lastPosition).magnitude >= Consts.WalkDistance*this.agent.speed)
+        if ((currentPosition - lastPosition).magnitude >= Consts.WalkDistance*speed)
         {
             Vector2 diff = currentPosition - lastPosition;
             float angle = Mathf.Atan2(diff.y, diff.x) * Mathf.Rad2Deg;
@@ -120,18 +115,24 @@ public class NPCController : MonoBehaviour
         if (this.isWarned)
         {
             
-            animator.speed = 0.5f* Consts.GuardWarnedMultiplier * this.agent.speed;
+            animator.speed = 0.5f* Consts.GuardWarnedMultiplier * this.speed;
         }
         else
         {
-            animator.speed = 0.5f * this.agent.speed;
+            animator.speed = 0.5f * this.speed;
         }
         lastPosition = this.transform.position;
     }
 
     void SetDestination(Vector2 pos)
     {
-        transform.position = Vector2.MoveTowards(transform.position, pos, this.agent.speed * Time.deltaTime);
+        var rb2D = GetComponent<Rigidbody2D>();
+        var np = Vector2.MoveTowards(transform.position, pos, this.speed * Time.fixedDeltaTime);
+        rb2D.MovePosition(np);
+        //Debug.Log($"from {this.transform.position} to {np}");
+        //Physics.SyncTransforms();
+
+
     }
     private void FixedUpdate()
     {
@@ -147,15 +148,17 @@ public class NPCController : MonoBehaviour
         {
             StartAnim();
             SetDestination(warnedPosition);
-            this.agent.speed = Consts.GuardSpeed * Consts.GuardWarnedMultiplier;
+            //transform.position = Vector2.MoveTowards(transform.position, warnedPosition, this.speed * Time.fixedDeltaTime);
+            this.speed = Consts.GuardSpeed * Consts.GuardWarnedMultiplier;
             return;
         }
         
         if (this.waypoints.Count == 0)
             return;
 
-        //agent.SetDestination(waypoints[currentWaypointInd]);
         SetDestination(waypoints[currentWaypointInd]);
+        //Debug.Log($"{transform.position}, {waypoints[currentWaypointInd]}, {Time.fixedDeltaTime}, {this.speed * Time.fixedDeltaTime}, {Vector2.MoveTowards(transform.position, waypoints[currentWaypointInd], this.speed * Time.fixedDeltaTime)}");
+        //transform.position = Vector2.MoveTowards(transform.position, waypoints[currentWaypointInd], this.speed * Time.fixedDeltaTime);
 
         if (Vector2.Distance(this.transform.position, waypoints[currentWaypointInd])<= 0.1f){
 /*            agent.radius = 1e-4f;
@@ -205,11 +208,11 @@ public class NPCController : MonoBehaviour
         if (this.isWarned)
         {
 
-            animator.speed = 0.5f * Consts.GuardWarnedMultiplier * this.agent.speed;
+            animator.speed = 0.5f * Consts.GuardWarnedMultiplier * this.speed;
         }
         else
         {
-            animator.speed = 0.5f * this.agent.speed;
+            animator.speed = 0.5f * this.speed;
         }
     }
     public void Kill()

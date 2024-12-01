@@ -10,6 +10,8 @@ public class UIController : MonoBehaviour
     public AudioSource losesound;
     public GameObject Stain;
 
+    public GameObject win;
+
     public static UIController instance;
 
     
@@ -71,7 +73,22 @@ public class UIController : MonoBehaviour
         Debug.Log("showlight");
         StartCoroutine(ExpandCircle(worldPosition, totalDuration));
     }
+    public void End()
+    {
+        win.SetActive(true);
+        StartCoroutine(WinEnd());
+    }
 
+    IEnumerator WinEnd()
+    {
+        float timer = 0f;
+        while (timer < 3f)
+        {
+            timer += Time.deltaTime;
+            yield return null;
+        }
+        Application.Quit();
+    }
     private IEnumerator ExpandCircle(Vector2 worldPosition, float totalDuration)
     {
 
